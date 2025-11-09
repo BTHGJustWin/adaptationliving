@@ -1,0 +1,25 @@
+{
+  "nav": {
+    "home": "Home",
+    "services": "Services",
+    "pricing": "Pricing",
+    "about": "About",
+    "contact": "Contact",
+    "project": "Project LS-2025 - Saving Veterans' Lives"
+  },
+  "hero": {
+    "title": "Adaptation Living LLC",
+    "subtitle": "Building stunning, high-performance websites for your business and your future.",
+    "cta": "Start Your Project"
+  },
+  "pricing": {
+    "starter": "Starter — Get Online Fast",
+    "standard": "Standard — Local Services & Leads",
+    "pro": "Pro — Sell Online (Local or Shipping)",
+    "elite": "Elite — Custom & Growth"
+  },
+  "footer": {
+    "rights": "All rights reserved.",
+    "cta": "Ready to start? Email info@adaptationliving.com"
+  }
+}

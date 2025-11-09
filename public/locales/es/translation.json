@@ -1,0 +1,25 @@
+{
+  "nav": {
+    "home": "Inicio",
+    "services": "Servicios",
+    "pricing": "Precios",
+    "about": "Acerca de",
+    "contact": "Contacto",
+    "project": "Proyecto LS-2025 - Salvando Vidas de Veteranos"
+  },
+  "hero": {
+    "title": "Adaptation Living LLC",
+    "subtitle": "Construimos sitios web impresionantes y de alto rendimiento para tu negocio y tu futuro.",
+    "cta": "Comienza tu Proyecto"
+  },
+  "pricing": {
+    "starter": "Inicial — Conéctate Rápido",
+    "standard": "Estándar — Servicios Locales y Clientes Potenciales",
+    "pro": "Pro — Vende en Línea (Local o Envío)",
+    "elite": "Elite — Personalizado y en Crecimiento"
+  },
+  "footer": {
+    "rights": "Todos los derechos reservados.",
+    "cta": "¿Listo para comenzar? Envía un correo a info@adaptationliving.com"
+  }
+}
