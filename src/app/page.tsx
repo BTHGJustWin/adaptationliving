@@ -1,23 +1,33 @@
-import Hero from "../components/Hero";
-import AboutSection from "../components/AboutSection";
-import PackagesSection from "../components/PackagesSection";
-import ContactSection from "../components/ContactSection";
+'use client';
 
-/**
- * Adaptation Living LLC — Main Page Assembly
- * ---------------------------------------------
- * This composes all major site sections in order:
- * Hero → About → Packages → Contact
- * ---------------------------------------------
- */
+import Hero from '../components/Hero';
+import Navbar from '../components/Navbar';
+import AboutSection from '../components/AboutSection';
+import PackagesSection from '../components/PackagesSection';
+import ContactSection from '../components/ContactSection';
+import Footer from '../components/Footer';
+import MotionLighting from '../components/MotionLighting';
+import AmbientSoundEngine from '../components/AmbientSoundEngine';
+import ReactiveParallax from '../components/ReactiveParallax';
 
-export default function Home() {
+export default function Page() {
   return (
-    <main className="flex flex-col items-center justify-center w-full overflow-hidden">
+    <>
+      {/* Audio / Visual Effects */}
+      <AmbientSoundEngine />
+      <MotionLighting />
+      <ReactiveParallax />
+
+      {/* Main Layout */}
+      <Navbar />
       <Hero />
-      <AboutSection />
-      <PackagesSection />
-      <ContactSection />
-    </main>
+
+      <main className="bg-black text-white">
+        <AboutSection />
+        <PackagesSection />
+        <ContactSection />
+        <Footer />
+      </main>
+    </>
   );
 }
