@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
@@ -9,11 +9,8 @@ export default function Hero() {
   const video1 = useRef<HTMLVideoElement>(null);
   const video2 = useRef<HTMLVideoElement>(null);
   const logoVid = useRef<HTMLVideoElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  const [accent, setAccent] = useState('rgba(255,255,255,0.35)');
-
-  // Crossfade loop between background videos (kept from your version)
+  // Cross-fade between the two timelapse videos
   useEffect(() => {
     const v1 = video1.current;
     const v2 = video2.current;
@@ -53,7 +50,7 @@ export default function Hero() {
     };
   }, []);
 
-  // Loop the animated logo
+  // Loop the animated logo video
   useEffect(() => {
     const lv = logoVid.current;
     if (!lv) return;
@@ -63,48 +60,14 @@ export default function Hero() {
     return () => lv.removeEventListener('ended', onEnd);
   }, []);
 
-  // Sample current video color to tint the logo glow
-  useEffect(() => {
-    const v = video1.current || video2.current;
-    const c = canvasRef.current;
-    if (!v || !c) return;
-
-    const ctx = c.getContext('2d', { willReadFrequently: true });
-    if (!ctx) return;
-
-    let timer: number | null = null;
-
-    const sample = () => {
-      try {
-        const W = 64, H = 36; // tiny sample for performance
-        c.width = W; c.height = H;
-        ctx.drawImage(v, 0, 0, W, H);
-        const data = ctx.getImageData(0, 0, W, H).data;
-        let r = 0, g = 0, b = 0, count = 0;
-        for (let i = 0; i < data.length; i += 4) {
-          r += data[i]; g += data[i + 1]; b += data[i + 2]; count++;
-        }
-        r = Math.round(r / count);
-        g = Math.round(g / count);
-        b = Math.round(b / count);
-        // a touch more saturation and warmth looks nicer at sunrise
-        const warmed = `rgba(${Math.min(255, r + 10)}, ${g}, ${Math.max(0, b - 5)}, 0.45)`;
-        setAccent(warmed);
-      } catch {}
-    };
-
-    // sample ~every 800ms while playing
-    timer = window.setInterval(sample, 800) as unknown as number;
-    sample();
-
-    return () => { if (timer) window.clearInterval(timer); };
-  }, []);
-
   const handleClick = (path: string) => router.push(path);
 
   return (
-    <section id="home" className="relative min-h-screen w-full overflow-hidden bg-black text-white font-[Lexend]">
-      {/* Full-viewport background videos */}
+    <section
+      id="home"
+      className="relative min-h-screen w-full overflow-hidden bg-black text-white font-[Lexend]"
+    >
+      {/* BACKGROUND TIME-LAPSE (full-screen, behind everything) */}
       <video
         ref={video1}
         src="/media/hero-bg.mp4"
@@ -124,10 +87,10 @@ export default function Hero() {
         preload="auto"
       />
 
-      {/* Soft gradient for legibility */}
-      <div className="pointer-events-none fixed inset-0 z-10 bg-gradient-to-b from-black/45 via-transparent to-black/70" />
+      {/* Legibility overlay */}
+      <div className="pointer-events-none fixed inset-0 z-10 bg-gradient-to-b from-black/50 via-transparent to-black/70" />
 
-      {/* NAV BAR (above everything) */}
+      {/* NAV BAR (stays above hero) */}
       <div className="absolute top-0 left-0 w-full z-50 flex items-center justify-between px-8 py-6 uppercase tracking-[0.25em] text-sm">
         <button
           onClick={() => document.getElementById('mainMenu')?.classList.toggle('hidden')}
@@ -165,15 +128,12 @@ export default function Hero() {
         <button onClick={() => handleClick('/contact')}>Contact</button>
       </div>
 
-      {/* CENTERED LOGO + TAGLINE */}
+      {/* CENTERED ANIMATED LOGO (HARD CAP: 800×400) */}
       <div className="fixed left-1/2 top-1/2 z-40 -translate-x-1/2 -translate-y-1/2 text-center">
-        {/* dynamic glow plate behind logo */}
         <div
-          aria-hidden
-          className="absolute -inset-10 rounded-2xl blur-2xl"
-          style={{ background: accent, filter: 'saturate(1.15)' }}
-        />
-        <div className="relative w-[min(72vw,900px)] max-w-[90vw] mx-auto drop-shadow-[0_10px_60px_rgba(0,0,0,0.6)]">
+          className="relative mx-auto drop-shadow-[0_8px_40px_rgba(0,0,0,0.6)]"
+          style={{ width: 'min(90vw, 800px)', maxHeight: 400 }}
+        >
           <video
             ref={logoVid}
             src="/media/FrontPageLogoVid.mp4"
@@ -182,11 +142,16 @@ export default function Hero() {
             playsInline
             autoPlay
             preload="auto"
+            style={{ maxHeight: 400 }}
           />
+          {/* soft radial glow on top of the plate */}
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle,rgba(255,255,255,0.2)_0%,transparent_70%)] mix-blend-overlay" />
         </div>
+
         <p className="mt-8 text-lg md:text-xl tracking-[0.35em] text-white/90">
           LIVING DESIGN INTELLIGENCE
         </p>
+
         <button
           onClick={() => handleClick('/packages')}
           className="mt-12 px-8 py-3 border border-white/60 rounded-md text-sm tracking-[0.25em] uppercase hover:bg-white hover:text-black transition-all duration-500"
@@ -195,7 +160,7 @@ export default function Hero() {
         </button>
       </div>
 
-      {/* Bottom link bar pinned over video */}
+      {/* BOTTOM LINKS BAR (pinned over video) */}
       <div className="fixed bottom-0 inset-x-0 bg-black/70 py-5 text-center text-[0.8rem] uppercase tracking-[0.3em] flex justify-center flex-wrap gap-6 border-t border-white/10 z-40">
         <button onClick={() => handleClick('/business')}>Business</button>
         <button onClick={() => handleClick('/design')}>Design</button>
@@ -203,9 +168,6 @@ export default function Hero() {
         <button onClick={() => handleClick('/ls2025')}>LS-2025</button>
         <button onClick={() => handleClick('/contact')}>Contact</button>
       </div>
-
-      {/* hidden canvas for color sampling */}
-      <canvas ref={canvasRef} width={64} height={36} className="hidden" />
     </section>
   );
 }
