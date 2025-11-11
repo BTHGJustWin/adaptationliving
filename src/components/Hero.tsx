@@ -6,58 +6,60 @@ import { useRouter } from 'next/navigation';
 
 export default function Hero() {
   const router = useRouter();
-  const video1 = useRef<HTMLVideoElement>(null);
-  const video2 = useRef<HTMLVideoElement>(null);
-  const logoVid = useRef<HTMLVideoElement>(null);
+
+  // Explicit, readable refs
+  const heroBgRef = useRef<HTMLVideoElement>(null);       // /media/hero-bg.mp4
+  const heroBgAltRef = useRef<HTMLVideoElement>(null);    // /media/hero-bg-alt.mp4
+  const logoVideoRef = useRef<HTMLVideoElement>(null);    // /media/FrontPageLogoVid.mp4
 
   // Cross-fade between the two timelapse videos
   useEffect(() => {
-    const v1 = video1.current;
-    const v2 = video2.current;
-    if (!v1 || !v2) return;
+    const primary = heroBgRef.current;
+    const alternate = heroBgAltRef.current;
+    if (!primary || !alternate) return;
 
-    v1.playbackRate = 0.5;
-    v2.playbackRate = 0.5;
+    primary.playbackRate = 0.5;
+    alternate.playbackRate = 0.5;
 
-    v1.style.opacity = '1';
-    v2.style.opacity = '0';
-    let showingV1 = true;
+    primary.style.opacity = '1';
+    alternate.style.opacity = '0';
+    let showingPrimary = true;
 
     const swap = () => {
-      if (showingV1) {
-        v1.pause();
-        v2.currentTime = 0;
-        v2.play().catch(() => {});
-        v1.style.opacity = '0';
-        v2.style.opacity = '1';
+      if (showingPrimary) {
+        primary.pause();
+        alternate.currentTime = 0;
+        alternate.play().catch(() => {});
+        primary.style.opacity = '0';
+        alternate.style.opacity = '1';
       } else {
-        v2.pause();
-        v1.currentTime = 0;
-        v1.play().catch(() => {});
-        v2.style.opacity = '0';
-        v1.style.opacity = '1';
+        alternate.pause();
+        primary.currentTime = 0;
+        primary.play().catch(() => {});
+        alternate.style.opacity = '0';
+        primary.style.opacity = '1';
       }
-      showingV1 = !showingV1;
+      showingPrimary = !showingPrimary;
     };
 
-    v1.addEventListener('ended', swap);
-    v2.addEventListener('ended', swap);
-    v1.play().catch(() => {});
+    primary.addEventListener('ended', swap);
+    alternate.addEventListener('ended', swap);
+    primary.play().catch(() => {});
 
     return () => {
-      v1.removeEventListener('ended', swap);
-      v2.removeEventListener('ended', swap);
+      primary.removeEventListener('ended', swap);
+      alternate.removeEventListener('ended', swap);
     };
   }, []);
 
   // Loop the animated logo video
   useEffect(() => {
-    const lv = logoVid.current;
-    if (!lv) return;
-    lv.play().catch(() => {});
-    const onEnd = () => { lv.currentTime = 0; lv.play().catch(() => {}); };
-    lv.addEventListener('ended', onEnd);
-    return () => lv.removeEventListener('ended', onEnd);
+    const logo = logoVideoRef.current;
+    if (!logo) return;
+    logo.play().catch(() => {});
+    const onEnd = () => { logo.currentTime = 0; logo.play().catch(() => {}); };
+    logo.addEventListener('ended', onEnd);
+    return () => logo.removeEventListener('ended', onEnd);
   }, []);
 
   const handleClick = (path: string) => router.push(path);
@@ -67,9 +69,9 @@ export default function Hero() {
       id="home"
       className="relative min-h-screen w-full overflow-hidden bg-black text-white font-[Lexend]"
     >
-      {/* BACKGROUND TIME-LAPSE (full-screen, behind everything) */}
+      {/* FULL-SCREEN TIME-LAPSE BACKGROUND */}
       <video
-        ref={video1}
+        ref={heroBgRef}
         src="/media/hero-bg.mp4"
         className="pointer-events-none fixed inset-0 h-full w-full object-cover opacity-100 transition-opacity duration-1000 z-0"
         autoPlay
@@ -78,7 +80,7 @@ export default function Hero() {
         preload="auto"
       />
       <video
-        ref={video2}
+        ref={heroBgAltRef}
         src="/media/hero-bg-alt.mp4"
         className="pointer-events-none fixed inset-0 h-full w-full object-cover opacity-0 transition-opacity duration-1000 z-0"
         autoPlay
@@ -87,10 +89,10 @@ export default function Hero() {
         preload="auto"
       />
 
-      {/* Legibility overlay */}
+      {/* Subtle legibility overlay */}
       <div className="pointer-events-none fixed inset-0 z-10 bg-gradient-to-b from-black/50 via-transparent to-black/70" />
 
-      {/* NAV BAR (stays above hero) */}
+      {/* NAV BAR */}
       <div className="absolute top-0 left-0 w-full z-50 flex items-center justify-between px-8 py-6 uppercase tracking-[0.25em] text-sm">
         <button
           onClick={() => document.getElementById('mainMenu')?.classList.toggle('hidden')}
@@ -128,14 +130,14 @@ export default function Hero() {
         <button onClick={() => handleClick('/contact')}>Contact</button>
       </div>
 
-      {/* CENTERED ANIMATED LOGO (HARD CAP: 800×400) */}
+      {/* CENTERED ANIMATED LOGO — HARD CAP 800×400 */}
       <div className="fixed left-1/2 top-1/2 z-40 -translate-x-1/2 -translate-y-1/2 text-center">
         <div
           className="relative mx-auto drop-shadow-[0_8px_40px_rgba(0,0,0,0.6)]"
-          style={{ width: 'min(90vw, 800px)', maxHeight: 400 }}
+          style={{ width: 'min(90vw, 800px)' }}
         >
           <video
-            ref={logoVid}
+            ref={logoVideoRef}
             src="/media/FrontPageLogoVid.mp4"
             className="w-full h-auto object-contain rounded-xl shadow-xl bg-white/85"
             muted
@@ -144,8 +146,10 @@ export default function Hero() {
             preload="auto"
             style={{ maxHeight: 400 }}
           />
-          {/* soft radial glow on top of the plate */}
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle,rgba(255,255,255,0.2)_0%,transparent_70%)] mix-blend-overlay" />
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle,rgba(255,255,255,0.2)_0%,transparent_70%)] mix-blend-overlay"
+          />
         </div>
 
         <p className="mt-8 text-lg md:text-xl tracking-[0.35em] text-white/90">
@@ -160,7 +164,7 @@ export default function Hero() {
         </button>
       </div>
 
-      {/* BOTTOM LINKS BAR (pinned over video) */}
+      {/* BOTTOM LINKS BAR */}
       <div className="fixed bottom-0 inset-x-0 bg-black/70 py-5 text-center text-[0.8rem] uppercase tracking-[0.3em] flex justify-center flex-wrap gap-6 border-t border-white/10 z-40">
         <button onClick={() => handleClick('/business')}>Business</button>
         <button onClick={() => handleClick('/design')}>Design</button>
