@@ -1,63 +1,60 @@
-"use client";
+'use client';
 
 import { useEffect, useRef } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-
-/**
- * Adaptation Living LLC — Hero Section (Rebuild)
- * ------------------------------------------------------------
- * Dual slow-motion background videos, centered animated logo,
- * Lexend menus, cinematic fade transitions, and real link routing.
- * ------------------------------------------------------------
- */
 
 export default function Hero() {
   const router = useRouter();
   const video1 = useRef<HTMLVideoElement>(null);
   const video2 = useRef<HTMLVideoElement>(null);
   const logoVid = useRef<HTMLVideoElement>(null);
-  let current = 1;
 
   useEffect(() => {
     const v1 = video1.current;
     const v2 = video2.current;
+
     if (!v1 || !v2) return;
 
-    // Slow both videos to half speed
+    // Slow both time-lapse videos
     v1.playbackRate = 0.5;
     v2.playbackRate = 0.5;
 
-    // Fade swap when each video ends
+    // Initial state
+    v1.style.opacity = "1";
+    v2.style.opacity = "0";
+
+    let showingV1 = true;
+
+    const fadeDuration = 2000;
+
     const swap = () => {
-      if (current === 1) {
+      if (showingV1) {
+        v1.pause();
         v2.currentTime = 0;
         v2.play();
-        v1.pause();
         v1.style.opacity = "0";
         v2.style.opacity = "1";
-        current = 2;
       } else {
+        v2.pause();
         v1.currentTime = 0;
         v1.play();
-        v2.pause();
         v2.style.opacity = "0";
         v1.style.opacity = "1";
-        current = 1;
       }
+      showingV1 = !showingV1;
     };
 
     v1.addEventListener("ended", swap);
     v2.addEventListener("ended", swap);
-    v1.play().catch(() => {});
 
+    v1.play().catch(() => {});
     return () => {
       v1.removeEventListener("ended", swap);
       v2.removeEventListener("ended", swap);
     };
   }, []);
 
-  // Center logo loop
   useEffect(() => {
     const lv = logoVid.current;
     if (lv) {
@@ -75,7 +72,7 @@ export default function Hero() {
 
   return (
     <section className="relative w-full h-screen overflow-hidden flex flex-col bg-black text-white font-[Lexend]">
-      {/* --- BACKGROUND VIDEOS --- */}
+      {/* --- BACKGROUND VIDEO 1 --- */}
       <video
         ref={video1}
         src="/media/hero-bg.mp4"
@@ -84,6 +81,7 @@ export default function Hero() {
         muted
         playsInline
       />
+      {/* --- BACKGROUND VIDEO 2 --- */}
       <video
         ref={video2}
         src="/media/hero-bg-alt.mp4"
@@ -92,9 +90,11 @@ export default function Hero() {
         muted
         playsInline
       />
+
+      {/* --- OVERLAY GRADIENT FOR COLOR TINT --- */}
       <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black/70 z-[1]" />
 
-      {/* --- TOP NAVBAR --- */}
+      {/* --- TOP NAV --- */}
       <div className="absolute top-0 left-0 w-full z-20 flex items-center justify-between px-10 py-6 uppercase tracking-[0.25em] text-sm">
         <button
           onClick={() =>
@@ -104,7 +104,6 @@ export default function Hero() {
         >
           ☰
         </button>
-
         <div className="absolute left-1/2 transform -translate-x-1/2 flex items-center justify-center">
           <Image
             src="/media/All Photos - 1 of 1.jpeg"
@@ -114,32 +113,19 @@ export default function Hero() {
             className="drop-shadow-[0_0_20px_rgba(255,255,255,0.6)]"
           />
         </div>
-
-        <div className="text-2xl cursor-pointer hover:opacity-70 transition-opacity">
-          🌐
-        </div>
+        <div className="text-2xl cursor-pointer hover:opacity-70 transition-opacity">🌐</div>
       </div>
 
-      {/* --- FULLSCREEN MENU --- */}
+      {/* --- MENU --- */}
       <div
         id="mainMenu"
         className="hidden absolute top-0 left-0 w-full h-full bg-[#0b0b0b]/95 z-30 flex flex-col items-center justify-center space-y-8 text-2xl font-light uppercase tracking-[0.25em]"
       >
-        <button onClick={() => handleClick("/business")} className="hover:text-gray-400 transition-colors">
-          Business Services
-        </button>
-        <button onClick={() => handleClick("/design")} className="hover:text-gray-400 transition-colors">
-          Design Services
-        </button>
-        <button onClick={() => handleClick("/web")} className="hover:text-gray-400 transition-colors">
-          Website / Domain / Email
-        </button>
-        <button onClick={() => handleClick("/ls2025")} className="hover:text-gray-400 transition-colors">
-          LS-2025 Project
-        </button>
-        <button onClick={() => handleClick("/contact")} className="hover:text-gray-400 transition-colors">
-          Contact
-        </button>
+        <button onClick={() => handleClick("/business")}>Business Services</button>
+        <button onClick={() => handleClick("/design")}>Design Services</button>
+        <button onClick={() => handleClick("/web")}>Website / Domain / Email</button>
+        <button onClick={() => handleClick("/ls2025")}>LS-2025 Project</button>
+        <button onClick={() => handleClick("/contact")}>Contact</button>
       </div>
 
       {/* --- CENTER LOGO --- */}
@@ -152,7 +138,6 @@ export default function Hero() {
             muted
             playsInline
           />
-          {/* Ambient floating effect */}
           <div className="absolute inset-0 animate-pulse-slow bg-[radial-gradient(circle,rgba(255,255,255,0.25)_0%,transparent_70%)] mix-blend-overlay" />
         </div>
         <p className="mt-8 text-lg md:text-xl tracking-[0.35em] text-white/90">
@@ -166,23 +151,13 @@ export default function Hero() {
         </button>
       </div>
 
-      {/* --- FOOTER MENU --- */}
+      {/* --- FOOTER NAV --- */}
       <div className="w-full bg-black/80 py-5 text-center text-[0.8rem] uppercase tracking-[0.3em] flex justify-center flex-wrap gap-6 border-t border-white/10">
-        <button onClick={() => handleClick("/business")} className="hover:text-gray-400">
-          Business
-        </button>
-        <button onClick={() => handleClick("/design")} className="hover:text-gray-400">
-          Design
-        </button>
-        <button onClick={() => handleClick("/web")} className="hover:text-gray-400">
-          Web
-        </button>
-        <button onClick={() => handleClick("/ls2025")} className="hover:text-gray-400">
-          LS-2025
-        </button>
-        <button onClick={() => handleClick("/contact")} className="hover:text-gray-400">
-          Contact
-        </button>
+        <button onClick={() => handleClick("/business")}>Business</button>
+        <button onClick={() => handleClick("/design")}>Design</button>
+        <button onClick={() => handleClick("/web")}>Web</button>
+        <button onClick={() => handleClick("/ls2025")}>LS-2025</button>
+        <button onClick={() => handleClick("/contact")}>Contact</button>
       </div>
     </section>
   );
