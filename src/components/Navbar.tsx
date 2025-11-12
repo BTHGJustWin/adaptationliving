@@ -1,10 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function Navbar() {
-  const [menuOpen, setMenuOpen] = useState(false);
+  const router = useRouter();
+  const [open, setOpen] = useState(false);
 
   const links = [
     { name: 'Home', href: '/' },
@@ -14,89 +15,55 @@ export default function Navbar() {
     { name: 'Contact', href: '/contact' },
   ];
 
-  // Lock body scroll when the mobile drawer is open, close on Escape
-  useEffect(() => {
-    if (!menuOpen) return;
-    const original = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setMenuOpen(false);
-    };
-    window.addEventListener('keydown', onKey);
-
-    return () => {
-      document.body.style.overflow = original;
-      window.removeEventListener('keydown', onKey);
-    };
-  }, [menuOpen]);
-
   return (
-    <nav className="absolute top-0 left-0 w-full z-30 flex items-center justify-between px-6 md:px-10 py-6 bg-gradient-to-b from-black/40 to-transparent">
-      <h1 className="text-xl tracking-widest text-[#f5f5f5] font-semibold">
-        ADAPTATION LIVING
-      </h1>
+    <nav className="group fixed top-0 inset-x-0 z-50">
+      {/* contrast background appears only on interaction */}
+      <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-within:opacity-100 bg-black/65 backdrop-blur-md" />
 
-      {/* Desktop links */}
-      <div className="hidden md:flex space-x-8 text-[#f5f5f5]">
-        {links.map((link) => (
-          <a
-            key={link.name}
-            href={link.href}
-            className="hover:text-white transition-colors duration-300 text-sm tracking-wide"
-          >
-            {link.name}
-          </a>
-        ))}
+      <div className="relative mx-auto w-full px-6 md:px-10 py-4 flex items-center justify-between">
+        <h1 className="text-xl tracking-widest font-semibold">
+          ADAPTATION LIVING
+        </h1>
+
+        {/* desktop links */}
+        <div className="hidden md:flex items-center gap-8 text-sm uppercase tracking-[0.25em]">
+          {links.map((l) => (
+            <button
+              key={l.name}
+              onClick={() => router.push(l.href)}
+              className="relative transition-opacity hover:opacity-90 focus:opacity-90"
+            >
+              {l.name}
+            </button>
+          ))}
+        </div>
+
+        {/* mobile toggle */}
+        <button
+          className="md:hidden text-2xl"
+          onClick={() => setOpen((s) => !s)}
+          aria-label="Open menu"
+        >
+          ☰
+        </button>
       </div>
 
-      {/* Mobile menu toggle */}
-      <button
-        type="button"
-        className="md:hidden cursor-pointer text-[#f5f5f5]"
-        onClick={() => setMenuOpen((v) => !v)}
-        aria-expanded={menuOpen}
-        aria-controls="mobile-menu"
-        aria-label={menuOpen ? 'Close menu' : 'Open menu'}
-      >
-        ☰
-      </button>
-
-      {/* Click-outside overlay (mobile only) */}
-      {menuOpen && (
-        <div
-          onClick={() => setMenuOpen(false)}
-          className="fixed inset-0 z-30 bg-black/40 backdrop-blur-sm md:hidden"
-          aria-hidden="true"
-        />
-      )}
-
-      {/* Dropdown Menu */}
-      <AnimatePresence>
-        {menuOpen && (
-          <motion.div
-            id="mobile-menu"
-            initial={{ opacity: 0, x: 200 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 200 }}
-            transition={{ duration: 0.3 }}
-            className="fixed top-0 right-0 h-full w-64 bg-[#f5f5f5]/95 backdrop-blur-md shadow-xl flex flex-col items-start justify-center space-y-8 px-8 z-40 md:hidden"
-            role="dialog"
-            aria-modal="true"
-          >
-            {links.map((link) => (
-              <a
-                key={link.name}
-                href={link.href}
-                onClick={() => setMenuOpen(false)}
-                className="text-black text-lg font-medium hover:text-gray-700 transition"
+      {/* mobile menu */}
+      {open && (
+        <div className="md:hidden bg-black/85 backdrop-blur-md border-t border-white/10">
+          <div className="px-6 py-4 flex flex-col gap-4 text-sm uppercase tracking-[0.25em]">
+            {links.map((l) => (
+              <button
+                key={l.name}
+                onClick={() => { setOpen(false); router.push(l.href); }}
+                className="text-left py-1"
               >
-                {link.name}
-              </a>
+                {l.name}
+              </button>
             ))}
-          </motion.div>
-        )}
-      </AnimatePresence>
+          </div>
+        </div>
+      )}
     </nav>
   );
 }
