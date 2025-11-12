@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 
-// ✅ Correct paths (your tsconfig maps @/* -> src/*)
+// Correct import roots: @/* -> src/*
 import { ThemeProvider } from '@/context/ThemeContext';
 import { LanguageProvider } from '@/context/LanguageContext';
 import { CognitiveProvider } from '@/context/CognitiveCore';
@@ -18,14 +18,13 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      {/* Dark base so the hero video shows; no white pane over it */}
+      {/* Dark base so the hero/video can be seen; no light pane */}
       <body className="min-h-screen bg-black text-white overflow-x-hidden antialiased">
         <ThemeProvider>
           <LanguageProvider>
             <MotionProvider>
               <CognitiveProvider>
                 <NeuralEnvironment>
-                  {/* Fixed transparent nav; contrast background appears on hover/focus (Navbar handles it) */}
                   <Navbar />
                   {children}
                 </NeuralEnvironment>
@@ -37,3 +36,4 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     </html>
   );
 }
+
