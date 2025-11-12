@@ -6,12 +6,12 @@ import { useRouter } from 'next/navigation';
 export default function Hero() {
   const router = useRouter();
 
-  // Explicit video refs
-  const heroBgRef = useRef<HTMLVideoElement>(null);     // /media/hero-bg.mp4
-  const heroBgAltRef = useRef<HTMLVideoElement>(null);  // /media/hero-bg-alt.mp4
-  const logoVideoRef = useRef<HTMLVideoElement>(null);  // /media/FrontPageLogoVid.mp4
+  // explicit refs
+  const heroBgRef = useRef<HTMLVideoElement>(null);     // /public/media/hero-bg.mp4
+  const heroBgAltRef = useRef<HTMLVideoElement>(null);  // /public/media/hero-bg-alt.mp4
+  const logoVideoRef = useRef<HTMLVideoElement>(null);  // /public/media/FrontPageLogoVid.mp4
 
-  // cross-fade between the two timelapse videos
+  // cross-fade background videos
   useEffect(() => {
     const primary = heroBgRef.current;
     const alternate = heroBgAltRef.current;
@@ -51,7 +51,7 @@ export default function Hero() {
     };
   }, []);
 
-  // loop the animated logo
+  // loop the animated logo video
   useEffect(() => {
     const logo = logoVideoRef.current;
     if (!logo) return;
@@ -63,7 +63,7 @@ export default function Hero() {
 
   return (
     <section className="relative min-h-screen w-full overflow-hidden">
-      {/* BACKGROUND TIME-LAPSE (full viewport) */}
+      {/* FULL-SCREEN TIME-LAPSE (behind everything) */}
       <video
         ref={heroBgRef}
         src="/media/hero-bg.mp4"
@@ -77,15 +77,12 @@ export default function Hero() {
         autoPlay muted playsInline preload="auto"
       />
 
-      {/* subtle legibility overlay */}
+      {/* Subtle readability overlay */}
       <div className="pointer-events-none fixed inset-0 z-10 bg-gradient-to-b from-black/45 via-transparent to-black/70" />
 
-      {/* CENTERED ANIMATED LOGO (HARD CAP 800×400) */}
+      {/* CENTERED ANIMATED LOGO (MAX 800×400) */}
       <div className="fixed left-1/2 top-1/2 z-40 -translate-x-1/2 -translate-y-1/2 text-center">
-        <div
-          className="relative mx-auto"
-          style={{ width: 'min(90vw, 800px)' }}
-        >
+        <div className="relative mx-auto" style={{ width: 'min(90vw, 800px)' }}>
           <video
             ref={logoVideoRef}
             src="/media/FrontPageLogoVid.mp4"
@@ -93,8 +90,10 @@ export default function Hero() {
             muted playsInline autoPlay preload="auto"
             style={{ maxHeight: 400 }}
           />
-          {/* soft glow */}
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle,rgba(255,255,255,0.2)_0%,transparent_70%)] mix-blend-overlay" />
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle,rgba(255,255,255,0.2)_0%,transparent_70%)] mix-blend-overlay"
+          />
         </div>
 
         {/* ACTION BUTTON */}
@@ -108,7 +107,7 @@ export default function Hero() {
         </div>
       </div>
 
-      {/* bottom spacer to avoid mobile address-bar overlap */}
+      {/* spacer to avoid mobile UI overlap */}
       <div className="h-24" />
     </section>
   );
