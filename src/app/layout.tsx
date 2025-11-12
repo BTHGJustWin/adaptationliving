@@ -1,32 +1,31 @@
 import type { Metadata } from 'next';
 import './globals.css';
 
-// Keep your context/provider structure intact if you’re using it elsewhere.
-// If any of these aren’t in your repo, you can remove that import+wrapper.
-import { ThemeProvider } from '@/src/context/ThemeContext';
-import { LanguageProvider } from '@/src/context/LanguageContext';
-import { CognitiveProvider } from '@/src/context/CognitiveCore';
-import { MotionProvider } from '@/src/context/NeuralMotionSync';
-import NeuralEnvironment from '@/src/components/NeuralEnvironment';
-import Navbar from '@/src/components/Navbar';
+// ✅ Correct paths (your tsconfig maps @/* -> src/*)
+import { ThemeProvider } from '@/context/ThemeContext';
+import { LanguageProvider } from '@/context/LanguageContext';
+import { CognitiveProvider } from '@/context/CognitiveCore';
+import { MotionProvider } from '@/context/NeuralMotionSync';
+
+import NeuralEnvironment from '@/components/NeuralEnvironment';
+import Navbar from '@/components/Navbar';
 
 export const metadata: Metadata = {
   title: 'Adaptation Living LLC',
-  description: 'Living Design Intelligence — Adaptive, Intelligent Web Design Systems',
+  description: 'Adaptive, intelligent web experiences.',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      {/* IMPORTANT: dark, transparent-friendly base so the hero shows */}
+      {/* Dark base so the hero video shows; no white pane over it */}
       <body className="min-h-screen bg-black text-white overflow-x-hidden antialiased">
         <ThemeProvider>
           <LanguageProvider>
             <MotionProvider>
               <CognitiveProvider>
-                {/* Optional: if this injects ambient effects, keep it */}
                 <NeuralEnvironment>
-                  {/* Fixed transparent nav with contrast-on-hover */}
+                  {/* Fixed transparent nav; contrast background appears on hover/focus (Navbar handles it) */}
                   <Navbar />
                   {children}
                 </NeuralEnvironment>
