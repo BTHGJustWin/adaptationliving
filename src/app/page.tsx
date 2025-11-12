@@ -4,10 +4,12 @@ import Hero from '@/components/Hero';
 
 export default function Page() {
   return (
-    <main className="relative min-h-screen w-full overflow-hidden">
+    // Exactly one viewport tall, and no scroll on the home screen
+    <main className="relative h-[100svh] w-full overflow-hidden bg-transparent">
       <Hero />
     </main>
   );
 }
+
 
 
