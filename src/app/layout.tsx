@@ -1,13 +1,12 @@
 import type { Metadata } from 'next';
 import './globals.css';
 
-// Correct import roots: @/* -> src/*
+// Keep providers that actually exist in your repo:
 import { ThemeProvider } from '@/context/ThemeContext';
 import { LanguageProvider } from '@/context/LanguageContext';
 import { CognitiveProvider } from '@/context/CognitiveCore';
 import { MotionProvider } from '@/context/NeuralMotionSync';
 
-import NeuralEnvironment from '@/components/NeuralEnvironment';
 import Navbar from '@/components/Navbar';
 
 export const metadata: Metadata = {
@@ -18,16 +17,15 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      {/* Dark base so the hero/video can be seen; no light pane */}
+      {/* Hard black base so no light panes ever overlay the hero */}
       <body className="min-h-screen bg-black text-white overflow-x-hidden antialiased">
         <ThemeProvider>
           <LanguageProvider>
             <MotionProvider>
               <CognitiveProvider>
-                <NeuralEnvironment>
-                  <Navbar />
-                  {children}
-                </NeuralEnvironment>
+                {/* REMOVE the NeuralEnvironment wrapper (it was likely painting surfaces) */}
+                <Navbar />
+                {children}
               </CognitiveProvider>
             </MotionProvider>
           </LanguageProvider>
@@ -36,4 +34,3 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     </html>
   );
 }
-
