@@ -1,6 +1,6 @@
 'use client';
 
-import Hero from '@/src/components/Hero';
+import Hero from '@/components/Hero';
 
 export default function Page() {
   return (
@@ -9,3 +9,4 @@ export default function Page() {
     </main>
   );
 }
+
