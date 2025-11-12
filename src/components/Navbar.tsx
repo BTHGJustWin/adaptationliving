@@ -16,16 +16,14 @@ export default function Navbar() {
   ];
 
   return (
-    <nav className="group fixed top-0 inset-x-0 z-50">
-      {/* contrast background appears only on interaction */}
+    <nav className="group fixed top-0 inset-x-0 z-50 font-[Lexend]">
+      {/* Contrast background appears only on interaction */}
       <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-within:opacity-100 bg-black/65 backdrop-blur-md" />
 
       <div className="relative mx-auto w-full px-6 md:px-10 py-4 flex items-center justify-between">
-        <h1 className="text-xl tracking-widest font-semibold">
-          ADAPTATION LIVING
-        </h1>
+        <h1 className="text-xl tracking-widest font-semibold">ADAPTATION LIVING</h1>
 
-        {/* desktop links */}
+        {/* Desktop links */}
         <div className="hidden md:flex items-center gap-8 text-sm uppercase tracking-[0.25em]">
           {links.map((l) => (
             <button
@@ -38,7 +36,7 @@ export default function Navbar() {
           ))}
         </div>
 
-        {/* mobile toggle */}
+        {/* Mobile toggle */}
         <button
           className="md:hidden text-2xl"
           onClick={() => setOpen((s) => !s)}
@@ -48,7 +46,7 @@ export default function Navbar() {
         </button>
       </div>
 
-      {/* mobile menu */}
+      {/* Mobile menu */}
       {open && (
         <div className="md:hidden bg-black/85 backdrop-blur-md border-t border-white/10">
           <div className="px-6 py-4 flex flex-col gap-4 text-sm uppercase tracking-[0.25em]">
