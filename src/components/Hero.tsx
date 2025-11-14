@@ -1,77 +1,121 @@
-'use client';
+// src/components/HeroVideo.tsx
+"use client";
 
-import { useEffect, useRef } from 'react';
-import { useRouter } from 'next/navigation';
+import { useEffect, useRef } from "react";
 
-export default function Hero() {
-  const router = useRouter();
+export default function HeroVideo() {
+  const video1Ref = useRef<HTMLVideoElement | null>(null);
+  const video2Ref = useRef<HTMLVideoElement | null>(null);
+  const logoRef = useRef<HTMLVideoElement | null>(null);
 
-  // explicit refs
-  const heroBgRef = useRef<HTMLVideoElement>(null);     // /public/media/hero-bg.mp4
-  const heroBgAltRef = useRef<HTMLVideoElement>(null);  // /public/media/hero-bg-alt.mp4
-  const logoVideoRef = useRef<HTMLVideoElement>(null);  // /public/media/FrontPageLogoVid.mp4
-
-  // cross-fade background videos
   useEffect(() => {
-    const primary = heroBgRef.current;
-    const alternate = heroBgAltRef.current;
-    if (!primary || !alternate) return;
+    const v1 = video1Ref.current;
+    const v2 = video2Ref.current;
+    if (!v1 || !v2) return;
 
-    primary.playbackRate = 0.5;
-    alternate.playbackRate = 0.5;
+    let current = 1;
 
-    primary.style.opacity = '1';
-    alternate.style.opacity = '0';
-    let showingPrimary = true;
+    v1.playbackRate = 0.5;
+    v2.playbackRate = 0.5;
 
     const swap = () => {
-      if (showingPrimary) {
-        primary.pause();
-        alternate.currentTime = 0;
-        alternate.play().catch(() => {});
-        primary.style.opacity = '0';
-        alternate.style.opacity = '1';
+      if (current === 1) {
+        v2.currentTime = 0;
+        v2.play().catch(() => {});
+        v1.style.opacity = "0";
+        v2.style.opacity = "1";
+        current = 2;
       } else {
-        alternate.pause();
-        primary.currentTime = 0;
-        primary.play().catch(() => {});
-        alternate.style.opacity = '0';
-        primary.style.opacity = '1';
+        v1.currentTime = 0;
+        v1.play().catch(() => {});
+        v2.style.opacity = "0";
+        v1.style.opacity = "1";
+        current = 1;
       }
-      showingPrimary = !showingPrimary;
     };
 
-    primary.addEventListener('ended', swap);
-    alternate.addEventListener('ended', swap);
-    primary.play().catch(() => {});
+    v1.addEventListener("ended", swap);
+    v2.addEventListener("ended", swap);
+
+    v1.play().catch(() => {});
 
     return () => {
-      primary.removeEventListener('ended', swap);
-      alternate.removeEventListener('ended', swap);
+      v1.removeEventListener("ended", swap);
+      v2.removeEventListener("ended", swap);
     };
   }, []);
 
-  // loop the animated logo
+  // Loop logo video forever
   useEffect(() => {
-    const logo = logoVideoRef.current;
-    if (!logo) return;
-    logo.play().catch(() => {});
-    const onEnd = () => { logo.currentTime = 0; logo.play().catch(() => {}); };
-    logo.addEventListener('ended', onEnd);
-    return () => logo.removeEventListener('ended', onEnd);
+    const lv = logoRef.current;
+    if (!lv) return;
+    const handleEnded = () => {
+      lv.currentTime = 0;
+      lv.play().catch(() => {});
+    };
+    lv.play().catch(() => {});
+    lv.addEventListener("ended", handleEnded);
+    return () => lv.removeEventListener("ended", handleEnded);
   }, []);
 
   return (
-    // The hero itself occupies exactly the viewport and never adds height
-    <section className="fixed inset-0 w-full h-[100svh] overflow-hidden">
-      {/* FULL-SCREEN TIME-LAPSE (behind everything) */}
+    <section className="relative w-full h-screen overflow-hidden bg-black text-white">
+      {/* Background videos */}
       <video
-        ref={heroBgRef}
+        ref={video1Ref}
+        className="absolute inset-0 w-full h-full object-cover opacity-100 transition-opacity duration-[2000ms]"
         src="/media/hero-bg.mp4"
-        className="pointer-events-none fixed inset-0 h-full w-full object-cover opacity-100 transition-opacity duration-1000 z-0"
-        autoPlay muted playsInline preload="auto"
+        autoPlay
+        muted
+        loop={false}
+        playsInline
       />
       <video
-        ref={heroBgAltRef}
+        ref={video2Ref}
+        className="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-[2000ms]"
         src="/media/hero-bg-alt.mp4"
-        className="pointer-events-none fixed inset-0 h-full w-full object-cover opacity-0 transition-opacity duration-1000 z-0"
+        autoPlay
+        muted
+        loop={false}
+        playsInline
+      />
+
+      {/* Dark gradient so content is readable */}
+      <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/20 to-black/80" />
+
+      {/* Centered logo video */}
+      <div className="relative z-10 h-full flex flex-col items-center justify-center text-center px-6">
+        <div className="relative w-[260px] md:w-[340px] aspect-video rounded-3xl overflow-hidden shadow-[0_0_40px_rgba(0,0,0,0.9)]">
+          <video
+            ref={logoRef}
+            src="/media/FrontPageLogoVid.mp4"
+            className="w-full h-full object-cover mix-blend-screen"
+            muted
+            playsInline
+          />
+          {/* Color-reactive overlay: lets video colors bleed into logo box */}
+          <div className="absolute inset-0 bg-gradient-to-tr from-orange-500/20 via-pink-500/25 to-sky-500/20 mix-blend-color dodge pointer-events-none" />
+        </div>
+
+        <div className="mt-10 space-y-3">
+          <p className="text-xs md:text-sm tracking-[0.35em] uppercase text-slate-200">
+            Adaptation Living LLC
+          </p>
+          <h1 className="text-3xl md:text-5xl font-semibold tracking-[0.3em] uppercase">
+            Living Design Intelligence
+          </h1>
+          <p className="max-w-xl mx-auto text-sm md:text-base text-slate-200">
+            Cinematic environments built to react to your world — light, motion,
+            and intent woven into every pixel.
+          </p>
+          <a
+            href="#packages"
+            className="inline-flex items-center justify-center mt-4 rounded-full border border-white/80 px-8 py-3 text-xs md:text-sm tracking-[0.3em] uppercase hover:bg-white hover:text-black transition-colors"
+          >
+            View Packages
+          </a>
+        </div>
+      </div>
+    </section>
+  );
+}
