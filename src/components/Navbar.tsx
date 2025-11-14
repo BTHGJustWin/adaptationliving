@@ -1,67 +1,84 @@
-'use client';
+// src/components/Navbar.tsx
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useEffect, useState } from "react";
+
+const LINKS = [
+  { href: "#home", label: "Home" },
+  { href: "#about", label: "About" },
+  { href: "#packages", label: "Packages" },
+  { href: "#portfolio", label: "Portfolio" },
+  { href: "#contact", label: "Contact" },
+];
 
 export default function Navbar() {
-  const router = useRouter();
+  const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
 
-  const links = [
-    { name: 'Home', href: '/' },
-    { name: 'About', href: '/about' },
-    { name: 'Packages', href: '/packages' },
-    { name: 'Portfolio', href: '/portfolio' },
-    { name: 'Contact', href: '/contact' },
-  ];
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 12);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   return (
-    <nav className="group fixed top-0 inset-x-0 z-50 font-[Lexend]">
-      {/* Contrast background appears only on interaction */}
-      <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-within:opacity-100 bg-black/65 backdrop-blur-md" />
-
-      <div className="relative mx-auto w-full px-6 md:px-10 py-4 flex items-center justify-between">
-        <h1 className="text-xl tracking-widest font-semibold">ADAPTATION LIVING</h1>
+    <header
+      className={`fixed top-0 inset-x-0 z-40 transition-all ${
+        scrolled
+          ? "backdrop-blur bg-black/60 border-b border-white/10"
+          : "bg-transparent"
+      }`}
+    >
+      <nav className="mx-auto max-w-6xl px-4 py-3 flex items-center justify-between">
+        <a
+          href="#home"
+          className="text-sm md:text-base tracking-[0.35em] uppercase font-semibold text-[#f5f5f5]"
+        >
+          Adaptation Living
+        </a>
 
         {/* Desktop links */}
-        <div className="hidden md:flex items-center gap-8 text-sm uppercase tracking-[0.25em]">
-          {links.map((l) => (
-            <button
-              key={l.name}
-              onClick={() => router.push(l.href)}
-              className="relative transition-opacity hover:opacity-90 focus:opacity-90"
-            >
-              {l.name}
-            </button>
+        <ul className="hidden md:flex items-center gap-8 text-xs uppercase tracking-[0.25em]">
+          {LINKS.map((link) => (
+            <li key={link.href}>
+              <a
+                href={link.href}
+                className="text-slate-100 hover:text-white hover:opacity-80 transition-colors"
+              >
+                {link.label}
+              </a>
+            </li>
           ))}
-        </div>
+        </ul>
 
         {/* Mobile toggle */}
         <button
-          className="md:hidden text-2xl"
-          onClick={() => setOpen((s) => !s)}
-          aria-label="Open menu"
+          onClick={() => setOpen((v) => !v)}
+          className="md:hidden text-xs tracking-[0.25em] uppercase border border-white/40 rounded-full px-3 py-1 text-slate-100"
         >
-          ☰
+          Menu
         </button>
-      </div>
+      </nav>
 
-      {/* Mobile menu */}
+      {/* Mobile drawer */}
       {open && (
-        <div className="md:hidden bg-black/85 backdrop-blur-md border-t border-white/10">
-          <div className="px-6 py-4 flex flex-col gap-4 text-sm uppercase tracking-[0.25em]">
-            {links.map((l) => (
-              <button
-                key={l.name}
-                onClick={() => { setOpen(false); router.push(l.href); }}
-                className="text-left py-1"
-              >
-                {l.name}
-              </button>
+        <div className="md:hidden bg-black/90 border-t border-white/10">
+          <ul className="flex flex-col px-4 py-3 gap-3 text-xs uppercase tracking-[0.25em]">
+            {LINKS.map((link) => (
+              <li key={link.href}>
+                <a
+                  href={link.href}
+                  onClick={() => setOpen(false)}
+                  className="block py-1 text-slate-100"
+                >
+                  {link.label}
+                </a>
+              </li>
             ))}
-          </div>
+          </ul>
         </div>
       )}
-    </nav>
+    </header>
   );
 }
